@@ -7,6 +7,7 @@ import glob
 import logging
 import string
 import unicodedata, re
+import sys
 
 from geeknote import GeekNote
 from storage import Storage
@@ -320,6 +321,7 @@ def main():
         parser.add_argument('--logpath', '-l', action='store', help='Path to log file. Default is GeekNoteSync in home dir')
         parser.add_argument('--two-way', '-t', action='store', help='Two-way sync')
         parser.add_argument('--all', '-a', action='store_true', help='Synchronize all notebooks', default=False)
+        parser.add_argument('--verbose', '-v', action='store_true', help='Verbose mode. Let GNSync print more logs about its progress')
 
         args = parser.parse_args()
 
@@ -331,6 +333,12 @@ def main():
         twoway = True if args.two_way else False
 
         reset_logpath(logpath)
+
+        if args.verbose:
+            handler = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter('%(message)s')
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
 
         if args.all:
             for notebook in all_notebooks():
